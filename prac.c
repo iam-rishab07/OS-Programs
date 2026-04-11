@@ -1,66 +1,24 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<time.h>
+#include<mpi.h>
 
-void main()
+int main(int argc, char** argv)
 {
-    int i,j,n,head,max,mov,dir,temp,pos;
+    int rank, size, total_sum=0, local_sum=0, n=1000;
+    int *data = NULL;
 
-    printf("Enter n, head, maxTrack, direction(0,1) : ");
-    scanf("%d %d %d %d",&n,&head,&max,&dir);
-    int req[20];
-    printf("Enter %d requests :\n",n);
-    for(i=0;i<n;i++)
-        scanf("%d",&req[i]);
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+    MPI_Comm_size(MPI_COMM_WORLD,&size);
 
-    // add boundaries and head to the list
-    req[n] = head;
-    req[n+1] = 0;
-    req[n+2] = max;
-    n=+3;
+    int local_n = n/size;
+    int *local_data = malloc(local_n*sizeof(int));
 
-    // sort the req
-    for(i=0;i<n-1;i++)
+    if(rank==0)
     {
-        for(j=0;j<n-i-1;j++)
-        {
-            if (req[j]>req[j+1])
-            {
-                temp=req[j];
-                req[j]=req[j+1];
-                req[j+1]=temp;
-            }
-        }
+        data = malloc(n*sizeof(int));
+        srand(time(0));
+        for(int i=0;i<n;i++) data[i]=rand()%100;
     }
-
-    // find the head
-    for(i=0;i<n;i++)
-        if(req[i]==head){pos=i;break;}
-
-    printf("Head Movement : %d",head);
-
-    if(dir == 0) { // LEFT
-        for(i = pos-1; i >= 0; i--) {
-            mov += abs(req[i] - head);
-            head = req[i];
-            printf(" -> %d", head);
-        }
-        for(i = pos+1; i < n-1; i++) { // Skip the 'max' boundary in sequence if not needed
-            mov += abs(req[i] - head);
-            head = req[i];
-            printf(" -> %d", head);
-        }
-    } else { // RIGHT
-        for(i = pos+1; i < n; i++) {
-            mov += abs(req[i] - head);
-            head = req[i];
-            printf(" -> %d", head);
-        }
-        for(i = pos-1; i > 0; i--) { // Skip '0' boundary if not needed
-            mov += abs(req[i] - head);
-            head = req[i];
-            printf(" -> %d", head);
-        }
-    }
-
-    printf("\ntotal head movement : %d",mov);
 }
