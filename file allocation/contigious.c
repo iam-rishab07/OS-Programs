@@ -29,7 +29,7 @@ int main() {
     scanf("%d", &n);
 
     // Initialize and randomly allocate some blocks
-    for (i = 0; i < n; i++) bit[i] = rand() % 2; 
+    for (i = 0; i < n; i++) bit[i] = (rand() % 2)? 1:0; 
 
     do {
         printf("\n1.Bit Vector 2.Create File 3.Show Directory 4.Exit: ");
